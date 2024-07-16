@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_app/task_entity.dart';
 import 'package:uuid/uuid.dart';
@@ -49,6 +50,13 @@ class TaskController extends GetxController {
       await supabase.from("Task").insert(taskData);
       return true;
     } catch (e) {
+      final context = Get.context;
+      if (context != null ) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red,content: Text('${e.toString()}')),
+        );
+      }
+
       return false;
     }
   }
@@ -82,6 +90,12 @@ class TaskController extends GetxController {
           .eq("uid", uid);
       return true;
     } catch (e) {
+      final context = Get.context;
+      if (context != null ) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red,content: Text('${e.toString()}')),
+        );
+      }
       return false;
     }
   }
@@ -121,6 +135,12 @@ class TaskController extends GetxController {
           .eq("uid", uid);
       return true;
     } catch (e) {
+      final context = Get.context;
+      if (context != null ) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red,content: Text('${e.toString()}')),
+        );
+      }
       return false;
     }
   }
@@ -166,6 +186,12 @@ class TaskController extends GetxController {
           .eq("uid", uid);
       return true;
     } catch (e) {
+      final context = Get.context;
+      if (context != null ) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red,content: Text('${e.toString()}')),
+        );
+      }
       return false;
     }
   }
