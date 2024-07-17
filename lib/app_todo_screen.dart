@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'add_todo_screen.dart';
 import 'app_todo_controller.dart';
 
+
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
 
@@ -38,10 +39,13 @@ class _TodoScreenState extends State<TodoScreen> {
             const SizedBox(height: 5.0),
             Obx((){
               final isOnline = taskController.isOnline.value;
+              final isSync = taskController.isSyncing.value;
               return Row(
                 children: [
-                  Text("Mode de travail ",style: TextStyle(fontStyle: FontStyle.italic,fontSize: 16),),
+                  const Text("Mode de travail ",style: TextStyle(fontStyle: FontStyle.italic,fontSize: 16),),
                   Text(isOnline ?  "En Linge" : "Hors Ligne",style: TextStyle(color: isOnline ? Colors.green : Colors.red,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic,fontSize: 16),),
+                  Expanded(child: Container()),
+                  if ( isSync != -1 ) Container(width: 20,height: 20,child: CircularProgressIndicator(),)
                 ],
               );
             }),

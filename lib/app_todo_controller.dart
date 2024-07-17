@@ -12,7 +12,7 @@ class TaskController extends GetxController {
 
   final isInitDB = false.obs;
   final isOnline = false.obs;
-  Rx<bool?> isSyncing = null.obs;
+  final isSyncing = 0.obs;
   late Timer _timerIsOnline;
   late Timer _timerSync;
   final supabase = Supabase.instance.client;
@@ -65,7 +65,7 @@ class TaskController extends GetxController {
     }
   }
 
-  Future<bool> updateTaskTaskOnline(String uid,Map<String,dynamic> taskData,BuildContext? context) async {
+  Future<bool> updateTaskTaskOnline(String uid,Map<String,dynamic> taskData,DateTime updateDate,BuildContext? context) async {
     try {
 
       await supabase
@@ -260,15 +260,17 @@ class TaskController extends GetxController {
     }
   }
 
-  Future<bool> isTaskExistOnServer(String uid) async {
+  Future<DateTime?> isTaskExistOnServer(String uid) async {
     try {
       final response = await supabase.from("Task").select("uid").eq("uid", uid).limit(1);
       if (response.length == 1 ) {
-        return true;
+        final updateDateString = response.first["updateDate"];
+        final updateDate = DateTime.parse(updateDateString);
+        return updateDate;
       }
-      return false;
+      return null;
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
@@ -279,13 +281,14 @@ class TaskController extends GetxController {
 
     for (var task in unsyncedTasks) {
       bool success = false ;
-      bool isTaskExistOnline = await isTaskExistOnServer(task.uid);
+      DateTime? updateDate = await isTaskExistOnServer(task.uid);
       final String uid = task.uid;
       final dateNow = DateTime.now();
 
-      if (isTaskExistOnline ) {
-        success = await updateTaskTaskOnline(uid,task.toJsonOnLineSyncUpdate(),null);
-
+      if ( updateDate != null ) {
+        if (updateDate.isBefore(task.updateDate)) {
+          success = await updateTaskTaskOnline(uid,task.toJsonOnLineSyncUpdate(),updateDate,null);
+        }
       } else {
         success = await addTaskOnline(task.toJsonOnLineInsert(),null);
       }
@@ -308,7 +311,7 @@ class TaskController extends GetxController {
     if (unsyncedTasks.isEmpty ) {
       try {
 
-        final allServerTask = await supabase.from("Task").select();
+        final allServerTask = await supabase.from("Task").select().eq("isArchived", false);
 
         if (allServerTask.isNotEmpty) {
 
@@ -355,14 +358,14 @@ class TaskController extends GetxController {
   }
 
   Future synchronisation() async {
-    isSyncing.value = true;
+    isSyncing.value = 1;
     bool isConnected = await hasInternetAccess();
     if (isConnected) {
       await syncToServer();
       await Future.delayed(const Duration(seconds: 1));
       await syncFromServer();
     }
-    isSyncing.value = false;
+    isSyncing.value = -1;
   }
 
   Future triggerSync() async {
