@@ -64,7 +64,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 5,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(),
                   ),
@@ -82,22 +82,22 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                       setState(() {
                         isLoading = true;
                       });
-        
-                      await Future.delayed(Duration(seconds: 1));
 
                       if (taskId == null ) {
-                        taskController.addTask(
+                        await taskController.addTask(
                           _titleController.text.trim(),
                           _descriptionController.text.trim(),
+                          context
                         );
                       } else {
-                        taskController.updateTask(
+                        await taskController.updateTask(
                           taskId,
                           _titleController.text.trim(),
                           _descriptionController.text.trim(),
                         );
-
                       }
+
+                      await Future.delayed(Duration(seconds: 1));
 
                       _titleController.clear();
                       _descriptionController.clear();
@@ -128,10 +128,10 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     setState(() {
                       isDeleting = true;
                     });
-        
+
+                    await taskController.archiveTask(taskId);
+
                     await Future.delayed(Duration(seconds: 1));
-        
-                    taskController.archiveTask(taskId);
 
                     Get.back();
         

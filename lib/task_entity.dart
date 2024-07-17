@@ -32,18 +32,27 @@ class TaskEntity {
   })  : dateCreated = dateCreated ?? DateTime.now(),
         updateDate = updateDate ?? DateTime.now();
 
-  Map<String, dynamic> toJsonOnLine() {
+  Map<String, dynamic> toJsonOnLineInsert() {
     return {
       'uid': uid,
       'title': title,
       'description': description,
       'isCompleted': isCompleted,
       'isArchived': isArchived,
-      'isSync': isSync,
-      'dateCreated': dateCreated.toIso8601String(),
-      'updateDate': updateDate.toIso8601String(),
+      'isSync': true,
     };
   }
+
+  Map<String, dynamic> toJsonOnLineSyncUpdate() {
+    return {
+      'title': title,
+      'description': description,
+      'isCompleted': isCompleted,
+      'isArchived': isArchived,
+      'isSync': true,
+    };
+  }
+
 }
 
 class TaskModel {
